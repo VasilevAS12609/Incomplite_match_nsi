@@ -1,5 +1,8 @@
+import datetime
+
 import pandas as pd
-import sqlalchemy
+import sqlalchemy as sqal
+import numpy as np
 import sqlite3
 import re
 from tqdm import tqdm
@@ -37,8 +40,9 @@ def import_db(import_q):
     yes_list = ["да", "y"]
     if import_q.lower() in yes_list:
         print("Подождите, идет импортирование...")
-        data_xlsx = pd.read_excel('Nsi.xlsx', index_col=0)
-        data_xlsx.to_sql('Nsi', db, if_exists='replace', index=True)
+        data_xlsx = pd.read_excel('Nsi.xlsx', index_col=0, dtype={'Дата_создания': datetime.date, 'Статус_ОЗМ': str})
+        print(data_xlsx)
+        data_xlsx.to_sql('Nsi', db, if_exists='replace', index=True, dtype={'Дата_создания': sqal.DATE})
         sku_base = sql.execute("SELECT * FROM Nsi")
         for sku in sku_base:
             sku_process_1 = ozm_process(sku[1])
@@ -74,7 +78,8 @@ def import_db(import_q):
 
 def read_input():
     input_list = []
-    nsi_base = sql.execute("SELECT * FROM Nsi WHERE ID_Аналог IS NOT NULL")
+    nsi_base = sql.execute("SELECT * FROM Nsi")
+    nsi_base_analog = sql.execute("SELECT * FROM Nsi WHERE ID_Аналог IS NOT NULL")
     for input in nsi_base:
         ozm_proc = ozm_process(input[1])
         id_analog = ""
