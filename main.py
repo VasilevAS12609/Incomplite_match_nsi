@@ -1,8 +1,4 @@
-import datetime
-
 import pandas as pd
-import sqlalchemy as sqal
-import numpy as np
 import sqlite3
 import re
 from tqdm import tqdm
@@ -112,7 +108,7 @@ def doubles_search():
             if insert_ozm[0] != s_ozm[0]:
                 try:
                 # Обрабатываем краткое наименование ОЗМ
-                    s_ozm_process_1 = s_ozm[7].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
+                    s_ozm_process_1 = s_ozm[8].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
                     s_ozm_inter_1 = insert_ozm[8].intersection(s_ozm_process_1)  # выводим совпадения слов
                     s_ozm_percent_1 = len(s_ozm_inter_1) / len(insert_ozm[8])  # вычисляем процент совпадения
                 except AttributeError:
@@ -121,7 +117,7 @@ def doubles_search():
                     s_ozm_percent_1 = 0
                 # Обрабатываем полное наименование ОЗМ
                 try:
-                    s_ozm_process_2 = s_ozm[8].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
+                    s_ozm_process_2 = s_ozm[9].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
                     s_ozm_inter_2 = insert_ozm[8].intersection(s_ozm_process_2)  # выводим совпадения слов
                     s_ozm_percent_2 = len(s_ozm_inter_2) / len(insert_ozm[8])  # вычисляем процент совпадения
                 except AttributeError:
@@ -130,7 +126,7 @@ def doubles_search():
                     s_ozm_percent_2 = 0
                 # Обрабатываем каталожный номер ОЗМ
                 try:
-                    s_ozm_process_3 = s_ozm[9].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
+                    s_ozm_process_3 = s_ozm[10].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
                     s_ozm_inter_3 = insert_ozm[8].intersection(s_ozm_process_3)  # выводим совпадения слов
                     s_ozm_percent_3 = len(s_ozm_inter_3) / len(insert_ozm[8])  # вычисляем процент совпадения
                 except AttributeError:
