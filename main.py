@@ -44,6 +44,14 @@ def ozm_process(text: str):
         pass
 
 
+def ozm_process_2(text: str):
+    try:
+        text = text.replace(",", "").replace("'", "").strip("{}").split()
+        return text
+    except Exception:
+        pass
+
+
 def import_db(import_q):
     sku_list = []
     yes_list = ["да", "y"]
@@ -75,6 +83,7 @@ def import_db(import_q):
 
 
 def read_input():
+    print("Готовится выборка ОЗМ, подождите...")
     date_1 = '1988-12-31 00:00:00'
     date_2 = '1989-01-12 00:00:00'
     nsi_base = sql.execute(
@@ -105,30 +114,40 @@ def doubles_search():
               ncols=90,
               bar_format="{l_bar} {bar} | строки: {n:.0f}/{total:.0f} | время: [{elapsed} < {remaining} = {eta:%H:%M:%S}] | {rate_fmt}{postfix}") as pbar:
         for insert_ozm, s_ozm in product(ozm_input, nsi_base):
-            if insert_ozm[0] != s_ozm[0]:
-                try:
+            if insert_ozm[0] != s_ozm[0] and insert_ozm[8] is not None:
                 # Обрабатываем краткое наименование ОЗМ
-                    s_ozm_process_1 = s_ozm[8].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
-                    s_ozm_inter_1 = insert_ozm[8].intersection(s_ozm_process_1)  # выводим совпадения слов
-                    s_ozm_percent_1 = len(s_ozm_inter_1) / len(insert_ozm[8])  # вычисляем процент совпадения
+                insert_ozm_proc = set(ozm_process_2(insert_ozm[8]))
+                try:
+                    if s_ozm[8] is not None:
+                        s_ozm_process_1 = ozm_process_2(s_ozm[8])  # ОЗМ из базы обработанная
+                        s_ozm_inter_1 = insert_ozm_proc.intersection(s_ozm_process_1)  # выводим совпадения слов
+                        s_ozm_percent_1 = len(s_ozm_inter_1) / len(insert_ozm_proc)  # вычисляем процент совпадения
+                    else:
+                        s_ozm_percent_1 = 0
                 except AttributeError:
                     s_ozm_percent_1 = 0
                 except ZeroDivisionError:
                     s_ozm_percent_1 = 0
                 # Обрабатываем полное наименование ОЗМ
                 try:
-                    s_ozm_process_2 = s_ozm[9].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
-                    s_ozm_inter_2 = insert_ozm[8].intersection(s_ozm_process_2)  # выводим совпадения слов
-                    s_ozm_percent_2 = len(s_ozm_inter_2) / len(insert_ozm[8])  # вычисляем процент совпадения
+                    if s_ozm[9] is not None:
+                        s_ozm_process_2 = ozm_process_2(s_ozm[9])  # ОЗМ из базы обработанная
+                        s_ozm_inter_2 = insert_ozm_proc.intersection(s_ozm_process_2)  # выводим совпадения слов
+                        s_ozm_percent_2 = len(s_ozm_inter_2) / len(insert_ozm_proc)  # вычисляем процент совпадения
+                    else:
+                        s_ozm_percent_2 = 0
                 except AttributeError:
                     s_ozm_percent_2 = 0
                 except ZeroDivisionError:
                     s_ozm_percent_2 = 0
                 # Обрабатываем каталожный номер ОЗМ
                 try:
-                    s_ozm_process_3 = s_ozm[10].replace(",", "").replace("'", "").strip("{}").split()  # ОЗМ из базы обработанная
-                    s_ozm_inter_3 = insert_ozm[8].intersection(s_ozm_process_3)  # выводим совпадения слов
-                    s_ozm_percent_3 = len(s_ozm_inter_3) / len(insert_ozm[8])  # вычисляем процент совпадения
+                    if s_ozm[10] is not None:
+                        s_ozm_process_3 = ozm_process_2(s_ozm[10])  # ОЗМ из базы обработанная
+                        s_ozm_inter_3 = insert_ozm_proc.intersection(s_ozm_process_3)  # выводим совпадения слов
+                        s_ozm_percent_3 = len(s_ozm_inter_3) / len(insert_ozm_proc)  # вычисляем процент совпадения
+                    else:
+                        s_ozm_percent_3 = 0
                 except AttributeError:
                     s_ozm_percent_3 = 0
                 except ZeroDivisionError:
@@ -139,6 +158,7 @@ def doubles_search():
                                         insert_ozm[0],
                                         insert_ozm[1],
                                         insert_ozm[6],
+                                        insert_ozm[7],
                                         s_ozm[0],
                                         s_ozm[1],
                                         s_ozm[2],
@@ -149,6 +169,20 @@ def doubles_search():
                                         ))
                 pbar.update(1)
         return result_list
+
+
+def post_product(list):
+    final_list = list
+    pop_list = []
+    for i in range(len(list)):
+        key_1 = str(list[i][5]) + str(list[i][1])
+        print(str(list[i][1]) + str(list[i][5]))
+        for n in range(len(list)):
+            if str(list[n][1]) + str(list[n][5]) == key_1:
+                print(str(list[n][1]) + str(list[n][5]), key_1)
+                pop_list.append(n)
+    print(pop_list)
+    return final_list
 
 
 #  Стартовый запрос
@@ -172,11 +206,12 @@ while True:
     show_percent = int(input()) / 100
     read_input()
     try:
-        df = pd.DataFrame(doubles_search(),
+        df = pd.DataFrame(post_product(doubles_search()),
                           columns=['%_соответствия',
                                    'ОЗМ_искомый',
                                    'Искомый_материал',
                                    'ID_Аналога_исходный',
+                                   'Дата_создания',
                                    'ОЗМ',
                                    'Наименование_краткое',
                                    'Наименование_полное',
@@ -193,10 +228,10 @@ while True:
         print('')
         print('ОШИБКА - Закройте файл Data_Output.xlsx')
         print('')
-    except IndexError:
-        print('')
-        print('ОШИБКА - количество строк на вывод более 1млн., проверьте Input_ozm.xlsx')
-        print('')
+    # except IndexError:
+    #     print('')
+    #     print('ОШИБКА - количество строк на вывод более 1млн., проверьте Input_ozm.xlsx')
+    #     print('')
     except Exception as error:
         print('')
         print(error)
