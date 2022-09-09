@@ -1,6 +1,7 @@
 import pandas as pd
 import sqlite3
 import re
+import datetime
 from tqdm import tqdm
 from itertools import product
 db = sqlite3.connect('DataBase1.db')
@@ -83,9 +84,13 @@ def import_db(import_q):
 
 
 def read_input():
+    print("Введите дату начала и окончания периода для выборки в следующем формате:")
+    print("25.06.2022, подтвердите ввод нажатием клавиши Enter")
+    print("Дата начала:")
+    date_1 = datetime.datetime.strptime(input(), "%d.%m.%Y").date()
+    print("Дата окончания:")
+    date_2 = datetime.datetime.strptime(input(), "%d.%m.%Y").date() + datetime.timedelta(days=1)
     print("Готовится выборка ОЗМ, подождите...")
-    date_1 = '1988-12-31 00:00:00'
-    date_2 = '1989-01-12 00:00:00'
     nsi_base = sql.execute(
         "SELECT * "
         "FROM Nsi "
@@ -173,15 +178,15 @@ def doubles_search():
 
 def post_product(list):
     final_list = list
-    pop_list = []
-    for i in range(len(list)):
-        key_1 = str(list[i][5]) + str(list[i][1])
-        print(str(list[i][1]) + str(list[i][5]))
-        for n in range(len(list)):
-            if str(list[n][1]) + str(list[n][5]) == key_1:
-                print(str(list[n][1]) + str(list[n][5]), key_1)
-                pop_list.append(n)
-    print(pop_list)
+    # pop_list = []
+    # for i in range(len(list)):
+    #     key_1 = str(list[i][5]) + str(list[i][1])
+    #     print(str(list[i][1]) + str(list[i][5]))
+    #     for n in range(len(list)):
+    #         if str(list[n][1]) + str(list[n][5]) == key_1:
+    #             print(str(list[n][1]) + str(list[n][5]), key_1)
+    #             pop_list.append(n)
+    # print(pop_list)
     return final_list
 
 
