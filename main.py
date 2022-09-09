@@ -120,59 +120,62 @@ def doubles_search():
               bar_format="{l_bar} {bar} | строки: {n:.0f}/{total:.0f} | время: [{elapsed} < {remaining} = {eta:%H:%M:%S}] | {rate_fmt}{postfix}") as pbar:
         for insert_ozm, s_ozm in product(ozm_input, nsi_base):
             if insert_ozm[0] != s_ozm[0] and insert_ozm[8] is not None:
-                # Обрабатываем краткое наименование ОЗМ
-                insert_ozm_proc = set(ozm_process_2(insert_ozm[8]))
-                try:
-                    if s_ozm[8] is not None:
-                        s_ozm_process_1 = ozm_process_2(s_ozm[8])  # ОЗМ из базы обработанная
-                        s_ozm_inter_1 = insert_ozm_proc.intersection(s_ozm_process_1)  # выводим совпадения слов
-                        s_ozm_percent_1 = len(s_ozm_inter_1) / len(insert_ozm_proc)  # вычисляем процент совпадения
-                    else:
+                if insert_ozm[6] is not None and s_ozm[6] is not None and insert_ozm[6] == s_ozm[6]:
+                    pass
+                else:
+                    # Обрабатываем краткое наименование ОЗМ
+                    insert_ozm_proc = set(ozm_process_2(insert_ozm[8]))
+                    try:
+                        if s_ozm[8] is not None:
+                            s_ozm_process_1 = ozm_process_2(s_ozm[8])  # ОЗМ из базы обработанная
+                            s_ozm_inter_1 = insert_ozm_proc.intersection(s_ozm_process_1)  # выводим совпадения слов
+                            s_ozm_percent_1 = len(s_ozm_inter_1) / len(insert_ozm_proc)  # вычисляем процент совпадения
+                        else:
+                            s_ozm_percent_1 = 0
+                    except AttributeError:
                         s_ozm_percent_1 = 0
-                except AttributeError:
-                    s_ozm_percent_1 = 0
-                except ZeroDivisionError:
-                    s_ozm_percent_1 = 0
-                # Обрабатываем полное наименование ОЗМ
-                try:
-                    if s_ozm[9] is not None:
-                        s_ozm_process_2 = ozm_process_2(s_ozm[9])  # ОЗМ из базы обработанная
-                        s_ozm_inter_2 = insert_ozm_proc.intersection(s_ozm_process_2)  # выводим совпадения слов
-                        s_ozm_percent_2 = len(s_ozm_inter_2) / len(insert_ozm_proc)  # вычисляем процент совпадения
-                    else:
+                    except ZeroDivisionError:
+                        s_ozm_percent_1 = 0
+                    # Обрабатываем полное наименование ОЗМ
+                    try:
+                        if s_ozm[9] is not None:
+                            s_ozm_process_2 = ozm_process_2(s_ozm[9])  # ОЗМ из базы обработанная
+                            s_ozm_inter_2 = insert_ozm_proc.intersection(s_ozm_process_2)  # выводим совпадения слов
+                            s_ozm_percent_2 = len(s_ozm_inter_2) / len(insert_ozm_proc)  # вычисляем процент совпадения
+                        else:
+                            s_ozm_percent_2 = 0
+                    except AttributeError:
                         s_ozm_percent_2 = 0
-                except AttributeError:
-                    s_ozm_percent_2 = 0
-                except ZeroDivisionError:
-                    s_ozm_percent_2 = 0
-                # Обрабатываем каталожный номер ОЗМ
-                try:
-                    if s_ozm[10] is not None:
-                        s_ozm_process_3 = ozm_process_2(s_ozm[10])  # ОЗМ из базы обработанная
-                        s_ozm_inter_3 = insert_ozm_proc.intersection(s_ozm_process_3)  # выводим совпадения слов
-                        s_ozm_percent_3 = len(s_ozm_inter_3) / len(insert_ozm_proc)  # вычисляем процент совпадения
-                    else:
+                    except ZeroDivisionError:
+                        s_ozm_percent_2 = 0
+                    # Обрабатываем каталожный номер ОЗМ
+                    try:
+                        if s_ozm[10] is not None:
+                            s_ozm_process_3 = ozm_process_2(s_ozm[10])  # ОЗМ из базы обработанная
+                            s_ozm_inter_3 = insert_ozm_proc.intersection(s_ozm_process_3)  # выводим совпадения слов
+                            s_ozm_percent_3 = len(s_ozm_inter_3) / len(insert_ozm_proc)  # вычисляем процент совпадения
+                        else:
+                            s_ozm_percent_3 = 0
+                    except AttributeError:
                         s_ozm_percent_3 = 0
-                except AttributeError:
-                    s_ozm_percent_3 = 0
-                except ZeroDivisionError:
-                    s_ozm_percent_3 = 0
-                max_percent = max(s_ozm_percent_1, s_ozm_percent_2, s_ozm_percent_3)
-                if max_percent >= show_percent:
-                    result_list.append(('{:.0%}'.format(max_percent),
-                                        insert_ozm[0],
-                                        insert_ozm[1],
-                                        insert_ozm[6],
-                                        insert_ozm[7],
-                                        s_ozm[0],
-                                        s_ozm[1],
-                                        s_ozm[2],
-                                        s_ozm[3],
-                                        s_ozm[4],
-                                        s_ozm[5],
-                                        s_ozm[6],
-                                        ))
-                pbar.update(1)
+                    except ZeroDivisionError:
+                        s_ozm_percent_3 = 0
+                    max_percent = max(s_ozm_percent_1, s_ozm_percent_2, s_ozm_percent_3)
+                    if max_percent >= show_percent:
+                        result_list.append(('{:.0%}'.format(max_percent),
+                                            insert_ozm[0],
+                                            insert_ozm[1],
+                                            insert_ozm[6],
+                                            insert_ozm[7],
+                                            s_ozm[0],
+                                            s_ozm[1],
+                                            s_ozm[2],
+                                            s_ozm[3],
+                                            s_ozm[4],
+                                            s_ozm[5],
+                                            s_ozm[6],
+                                            ))
+                    pbar.update(1)
         return result_list
 
 
